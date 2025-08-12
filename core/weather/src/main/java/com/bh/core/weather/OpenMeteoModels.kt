@@ -9,9 +9,7 @@ data class OpenMeteoResponse(
 )
 
 data class CurrentWeather(
-    val temperature: Double?,
-    val windspeed: Double?,
-    val weathercode: Int?
+    val temperature: Double?, val windspeed: Double?, val weathercode: Int?
 )
 
 data class DailyBlock(
@@ -31,7 +29,6 @@ data class DailyForecast(
 )
 
 data class WeatherSummary(
-    val currentTempC: Double?,
-    val daily: List<DailyForecast>
+    val currentTempC: Double?, val daily: List<DailyForecast>
 )
 

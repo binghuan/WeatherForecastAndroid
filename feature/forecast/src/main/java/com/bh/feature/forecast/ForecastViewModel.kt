@@ -15,9 +15,12 @@ data class UiState(
     val selectedCity: City = City.Predefined.default()
 )
 
-sealed class City(val name: String, val latitude: Double, val longitude: Double) {
-    class Predefined private constructor(name: String, latitude: Double, longitude: Double) :
-        City(name, latitude, longitude) {
+sealed class City(
+    val name: String, val latitude: Double, val longitude: Double
+) {
+    class Predefined private constructor(
+        name: String, latitude: Double, longitude: Double
+    ) : City(name, latitude, longitude) {
         companion object {
             val cities = listOf(
                 Predefined("San Francisco", 37.7749, -122.4194),
@@ -51,10 +54,13 @@ class ForecastViewModel(
     fun refresh() {
         val city = _uiState.value.selectedCity
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+            _uiState.value =
+                _uiState.value.copy(isLoading = true, errorMessage = null)
             try {
-                val result = repository.getWeather(city.latitude, city.longitude)
-                _uiState.value = _uiState.value.copy(isLoading = false, summary = result)
+                val result =
+                    repository.getWeather(city.latitude, city.longitude)
+                _uiState.value =
+                    _uiState.value.copy(isLoading = false, summary = result)
             } catch (t: Throwable) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,

@@ -10,7 +10,9 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 class WeatherRepository(
     private val api: OpenMeteoApi
 ) {
-    suspend fun getWeather(latitude: Double, longitude: Double): WeatherSummary {
+    suspend fun getWeather(
+        latitude: Double, longitude: Double
+    ): WeatherSummary {
         val response = api.forecast(latitude = latitude, longitude = longitude)
         val currentTemp = response.current_weather?.temperature
         val dailyBlock = response.daily
@@ -19,9 +21,13 @@ class WeatherRepository(
                 val size = dailyBlock.time?.size ?: 0
                 for (i in 0 until size) {
                     val dateIso = dailyBlock.time?.getOrNull(i) ?: continue
-                    val max = dailyBlock.temperature_2m_max?.getOrNull(i) ?: continue
-                    val min = dailyBlock.temperature_2m_min?.getOrNull(i) ?: continue
-                    val precip = dailyBlock.precipitation_probability_mean?.getOrNull(i) ?: 0
+                    val max =
+                        dailyBlock.temperature_2m_max?.getOrNull(i) ?: continue
+                    val min =
+                        dailyBlock.temperature_2m_min?.getOrNull(i) ?: continue
+                    val precip =
+                        dailyBlock.precipitation_probability_mean?.getOrNull(i)
+                            ?: 0
                     val code = dailyBlock.weathercode?.getOrNull(i) ?: 0
                     add(
                         DailyForecast(
@@ -43,17 +49,13 @@ class WeatherRepository(
             val logging = HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BASIC
             }
-            val client = OkHttpClient.Builder()
-                .addInterceptor(logging)
-                .build()
-            val moshi = Moshi.Builder()
-                .add(KotlinJsonAdapterFactory())
-                .build()
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://api.open-meteo.com/")
-                .client(client)
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .build()
+            val client = OkHttpClient.Builder().addInterceptor(logging).build()
+            val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+            val retrofit =
+                Retrofit.Builder().baseUrl("https://api.open-meteo.com/")
+                    .client(client)
+                    .addConverterFactory(MoshiConverterFactory.create(moshi))
+                    .build()
             val api = retrofit.create(OpenMeteoApi::class.java)
             return WeatherRepository(api)
         }

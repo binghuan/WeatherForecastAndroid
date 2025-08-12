@@ -36,9 +36,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.tooling.preview.Preview
+import com.bh.core.weather.DailyForecast
+import com.bh.core.weather.WeatherSummary
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun ForecastRoute(viewModel: ForecastViewModel) {
@@ -52,14 +57,14 @@ fun ForecastRoute(viewModel: ForecastViewModel) {
 
 @Composable
 fun ForecastScreen(
-    state: UiState,
-    onSelectCity: (City) -> Unit,
-    onRefresh: () -> Unit
+    state: UiState, onSelectCity: (City) -> Unit, onRefresh: () -> Unit
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 12.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -78,7 +83,9 @@ fun ForecastScreen(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-            CityPicker(current = state.selectedCity, onSelectCity = onSelectCity)
+            CityPicker(
+                current = state.selectedCity, onSelectCity = onSelectCity
+            )
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -93,6 +100,7 @@ fun ForecastScreen(
                         CircularProgressIndicator()
                     }
                 }
+
                 state.errorMessage != null -> {
                     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
@@ -102,6 +110,7 @@ fun ForecastScreen(
                         )
                     }
                 }
+
                 else -> {
                     val summary = state.summary
                     if (summary != null) {
@@ -158,17 +167,19 @@ private fun CityPicker(current: City, onSelectCity: (City) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     Column(modifier = Modifier.fillMaxWidth()) {
         OutlinedButton(onClick = { expanded = true }) {
-            Text(text = current.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                text = current.name,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        DropdownMenu(
+            expanded = expanded, onDismissRequest = { expanded = false }) {
             City.Predefined.cities.forEach { city ->
-                DropdownMenuItem(
-                    text = { Text(city.name) },
-                    onClick = {
-                        onSelectCity(city)
-                        expanded = false
-                    }
-                )
+                DropdownMenuItem(text = { Text(city.name) }, onClick = {
+                    onSelectCity(city)
+                    expanded = false
+                })
             }
         }
     }
@@ -182,15 +193,25 @@ private fun DailyForecastRow(
     precipPct: Int,
     weatherCode: Int
 ) {
-    val dateText = runCatching {
-        LocalDate.parse(dateIso).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
-    }.getOrElse { dateIso }
+    val parsedDate = runCatching { LocalDate.parse(dateIso) }.getOrNull()
+    val dateText =
+        parsedDate?.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+            ?: dateIso
+    val dayOfWeek = parsedDate?.dayOfWeek?.getDisplayName(
+        TextStyle.SHORT, Locale.getDefault()
+    ) ?: ""
+    val headline =
+        if (dayOfWeek.isNotEmpty()) "$dayOfWeek, $dateText" else dateText
 
     ListItem(
-        headlineContent = { Text(text = dateText) },
+        headlineContent = { Text(text = headline) },
         supportingContent = { Text(text = "${minC.toInt()}° / ${maxC.toInt()}°  ·  ${precipPct}% rain") },
-        leadingContent = { Text(text = weatherEmoji(weatherCode), style = MaterialTheme.typography.titleLarge) }
-    )
+        leadingContent = {
+            Text(
+                text = weatherEmoji(weatherCode),
+                style = MaterialTheme.typography.titleLarge
+            )
+        })
 }
 
 private fun weatherEmoji(code: Int): String = when (code) {
@@ -207,6 +228,49 @@ private fun weatherEmoji(code: Int): String = when (code) {
     95 -> "⛈️" // Thunderstorm
     96, 99 -> "⛈️" // Thunderstorm with hail
     else -> "🌡️"
+}
+
+// ---------- Previews ----------
+
+@Preview(name = "Forecast - Content", showBackground = true, widthDp = 360)
+@Composable
+private fun PreviewForecastScreen_Content() {
+    val sampleDaily = listOf(
+        DailyForecast("2025-10-14", 12.0, 20.0, 30, 61),
+        DailyForecast("2025-10-15", 13.0, 22.0, 10, 0),
+        DailyForecast("2025-10-16", 11.0, 18.0, 60, 80),
+        DailyForecast("2025-10-17", 10.0, 19.0, 20, 3),
+        DailyForecast("2025-10-18", 9.0, 17.0, 50, 45)
+    )
+    val state = UiState(
+        isLoading = false,
+        errorMessage = null,
+        summary = WeatherSummary(currentTempC = 21.5, daily = sampleDaily)
+    )
+    ForecastScreen(state = state, onSelectCity = {}, onRefresh = {})
+}
+
+@Preview(name = "Forecast - Loading", showBackground = true, widthDp = 360)
+@Composable
+private fun PreviewForecastScreen_Loading() {
+    val state = UiState(isLoading = true)
+    ForecastScreen(state = state, onSelectCity = {}, onRefresh = {})
+}
+
+@Preview(name = "Forecast - Error", showBackground = true, widthDp = 360)
+@Composable
+private fun PreviewForecastScreen_Error() {
+    val state = UiState(isLoading = false, errorMessage = "Network error")
+    ForecastScreen(state = state, onSelectCity = {}, onRefresh = {})
+}
+
+@Preview(name = "CityPicker", showBackground = true, widthDp = 360)
+@Composable
+private fun PreviewCityPicker() {
+    Surface {
+        CityPicker(
+            current = City.Predefined.default(), onSelectCity = {})
+    }
 }
 
 
