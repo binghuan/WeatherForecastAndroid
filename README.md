@@ -67,4 +67,33 @@ Basic unit/instrumentation test stubs are included (`test/` and `androidTest/`).
 ./gradlew connectedAndroidTest
 ```
 
+### Module dependencies
+```
+app
+ └── feature:forecast
+      └── core:weather
+```
+- `app` depends on `feature:forecast` and optionally may depend on `core:weather` directly if needed.
+- `feature:forecast` depends on `core:weather`.
+
+### Build variants and previews
+- Compose Previews require the tooling dependency in feature modules:
+  - `implementation(libs.androidx.ui.tooling.preview)`
+  - `debugImplementation(libs.androidx.ui.tooling)`
+- If Preview fails with missing `ComposeViewAdapter`, sync Gradle and ensure the above dependencies are present.
+
+### Troubleshooting
+- Conversion error like “Unable to create converter for OpenMeteoResponse”: ensure Moshi is initialized with `KotlinJsonAdapterFactory()` (already configured in `WeatherRepository.create()`).
+- Title overlapped by camera cutout/notch: safe area is handled via `WindowInsets.safeDrawing` and `innerPadding` in `MainActivity`.
+- Preview crashes: use the `Debug` variant and keep `ui-tooling` as a `debugImplementation` only.
+
+### Customization
+- Replace emoji with real icons (Vector assets) or a weather icon pack.
+- Move manifest permissions from `core/weather` to `app` if you prefer centralized permission governance.
+- Add more features as separate modules under `feature/` (e.g., `feature/settings`).
+- Split `core` by layer if needed: `core/data`, `core/domain`, `core/ui`.
+
+### License
+MIT License © 2025
+
 
