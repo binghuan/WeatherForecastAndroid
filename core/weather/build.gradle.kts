@@ -36,6 +36,8 @@ dependencies {
     implementation(libs.retrofit.converter.moshi)
     implementation(libs.moshi.core)
     implementation(libs.moshi.kotlin)
+
+    testImplementation(libs.junit)
 }
 
 

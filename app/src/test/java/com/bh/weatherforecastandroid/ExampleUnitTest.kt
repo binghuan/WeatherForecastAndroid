@@ -1,17 +1,18 @@
 package com.bh.weatherforecastandroid
 
 import org.junit.Test
+import org.junit.Assert.assertEquals
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
-import org.junit.Assert.*
-
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 class ExampleUnitTest {
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun dateFormatting_isStable() {
+        val date = LocalDate.of(2025, 10, 14)
+        val text = date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+        // Format is locale dependent; ensure it's non-empty and contains year
+        assert(text.isNotBlank())
+        assert(text.contains("2025"))
     }
 }
