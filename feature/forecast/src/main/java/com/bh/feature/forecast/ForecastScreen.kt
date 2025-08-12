@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.PopupProperties
 import com.bh.core.weather.DailyForecast
 import com.bh.core.weather.WeatherSummary
 import java.time.LocalDate
@@ -163,8 +164,14 @@ fun ForecastScreen(
 }
 
 @Composable
-private fun CityPicker(current: City, onSelectCity: (City) -> Unit) {
-    var expanded by remember { mutableStateOf(false) }
+private fun CityPicker(
+    current: City,
+    onSelectCity: (City) -> Unit,
+    initialExpanded: Boolean = false,
+    menuProperties: PopupProperties = PopupProperties(focusable = true),
+    renderMenuAsPopup: Boolean = true
+) {
+    var expanded by remember { mutableStateOf(initialExpanded) }
     Column(modifier = Modifier.fillMaxWidth()) {
         OutlinedButton(onClick = { expanded = true }) {
             Text(
@@ -173,13 +180,29 @@ private fun CityPicker(current: City, onSelectCity: (City) -> Unit) {
                 overflow = TextOverflow.Ellipsis
             )
         }
-        DropdownMenu(
-            expanded = expanded, onDismissRequest = { expanded = false }) {
-            City.Predefined.cities.forEach { city ->
-                DropdownMenuItem(text = { Text(city.name) }, onClick = {
-                    onSelectCity(city)
-                    expanded = false
-                })
+        if (renderMenuAsPopup) {
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                properties = menuProperties
+            ) {
+                City.Predefined.cities.forEach { city ->
+                    DropdownMenuItem(text = { Text(city.name) }, onClick = {
+                        onSelectCity(city)
+                        expanded = false
+                    })
+                }
+            }
+        } else if (expanded) {
+            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(vertical = 4.dp)) {
+                    City.Predefined.cities.forEach { city ->
+                        DropdownMenuItem(text = { Text(city.name) }, onClick = {
+                            onSelectCity(city)
+                            expanded = false
+                        })
+                    }
+                }
             }
         }
     }
@@ -270,6 +293,20 @@ private fun PreviewCityPicker() {
     Surface {
         CityPicker(
             current = City.Predefined.default(), onSelectCity = {})
+    }
+}
+
+@Preview(name = "CityPicker - Expanded", showBackground = true, widthDp = 360)
+@Composable
+private fun PreviewCityPickerExpanded() {
+    Surface {
+        CityPicker(
+            current = City.Predefined.default(),
+            onSelectCity = {},
+            initialExpanded = true,
+            menuProperties = PopupProperties(focusable = false),
+            renderMenuAsPopup = false
+        )
     }
 }
 
