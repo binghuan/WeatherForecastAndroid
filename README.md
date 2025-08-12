@@ -49,6 +49,7 @@ Command‑line builds:
 - API: Uses Open‑Meteo, which does not require an API key.
 - Base URL: `https://api.open-meteo.com/`
 - Permission: `android.permission.INTERNET` is declared in `core/weather` and is merged into the final app manifest. You can move it to `app/src/main/AndroidManifest.xml` if you prefer centralizing permissions in the app module.
+- API details: see [API.md](API.md). Example request: [`forecast`](https://api.open-meteo.com/v1/forecast?latitude=37.7749&longitude=-122.4194&current_weather=true&timezone=auto&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_probability_mean%2Cweathercode)
 
 ### UI notes
 - The top bar/title area respects the device safe area using `WindowInsets.safeDrawing` and applies `innerPadding` from `Scaffold`.

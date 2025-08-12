@@ -49,6 +49,7 @@ feature/forecast/         # 天氣預報功能模組：UI + ViewModel
 - API：使用 Open‑Meteo，不需 API Key
 - Base URL：`https://api.open-meteo.com/`
 - 權限：`android.permission.INTERNET` 目前宣告於 `core/weather`，會在打包時合併至 App Manifest。如需集中管理，可移至 `app/src/main/AndroidManifest.xml`。
+- API 詳細說明：請見 [API.md](API.md)。範例請求：[`forecast`](https://api.open-meteo.com/v1/forecast?latitude=37.7749&longitude=-122.4194&current_weather=true&timezone=auto&daily=temperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_probability_mean%2Cweathercode)
 
 ### UI 說明
 - 透過 `WindowInsets.safeDrawing` 與 `Scaffold` 的 `innerPadding` 處理安全區，避免標題被瀏海/膠囊遮住。
