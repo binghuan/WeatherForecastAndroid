@@ -1,2 +1,8 @@
 /.gradle
 /.idea
+/core/weather/build
+/feature/forecast/build
+gradlew
+gradlew.bat
+gradle/wrapper/gradle-wrapper.jar
+gradle/wrapper/gradle-wrapper.properties
