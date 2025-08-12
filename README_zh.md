@@ -4,7 +4,10 @@
 
 一個以 Kotlin 與 Jetpack Compose 打造的 Android 天氣範例 App，使用 Open‑Meteo API 顯示即時天氣與 7 日預報（不需 API Key）。
 
-<img src="README/demo.png" alt="App demo" width="256">
+<p>
+  <img src="README/demo.png" alt="App demo" width="256" />
+  <img src="README/demo.gif" alt="Animated demo" width="256" />
+</p>
 
 ### 概覽
 - 使用 `https://api.open-meteo.com/` 透過 Retrofit + Moshi 取得天氣資料

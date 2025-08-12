@@ -4,7 +4,10 @@
 
 An Android sample app built with Kotlin and Jetpack Compose that displays current weather and a 7‑day forecast using the Open‑Meteo API (no API key required).
 
-<img src="README/demo.png" alt="App demo" width="256">
+<p>
+  <img src="README/demo.png" alt="App demo" width="256" />
+  <img src="README/demo.gif" alt="Animated demo" width="256" />
+</p>
 
 ### Overview
 - Fetches weather data from `https://api.open-meteo.com/` via Retrofit + Moshi
