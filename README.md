@@ -1,0 +1,70 @@
+## WeatherForecastAndroid
+
+An Android sample app built with Kotlin and Jetpack Compose that displays current weather and a 7‑day forecast using the Open‑Meteo API (no API key required).
+
+### Overview
+- Fetches weather data from `https://api.open-meteo.com/` via Retrofit + Moshi
+- Modern Compose UI with Material 3 components and safe‑area handling
+- Simple multi‑module architecture for faster builds and clear boundaries
+
+### Project structure
+```
+app/                      # Application module – entry point and app theming
+core/weather/             # Data layer for weather (Retrofit API, models, repository)
+feature/forecast/         # Forecast feature (UI + ViewModel)
+```
+- `app`: wires the app and hosts `MainActivity`. Uses a `Scaffold` with `WindowInsets.safeDrawing` so the UI avoids cutouts/notches.
+- `core/weather`: contains `OpenMeteoApi`, data models, and `WeatherRepository`. Retrofit is configured with Moshi and `KotlinJsonAdapterFactory()`.
+- `feature/forecast`: contains `ForecastScreen` and `ForecastViewModel` that call the repository and render the UI.
+
+### Tech stack
+- Language: Kotlin
+- UI: Jetpack Compose, Material 3
+- Networking: Retrofit, OkHttp (with logging)
+- JSON: Moshi (+ `KotlinJsonAdapterFactory`)
+- Concurrency: Kotlin Coroutines
+- Lifecycle: AndroidX Lifecycle ViewModel
+
+### Requirements
+- Android Studio (Koala or newer)
+- Android Gradle Plugin 8.x (configured via Gradle wrapper)
+- Compile SDK 36, Min SDK 24, JVM target 11
+
+### Getting started
+1. Open the project in Android Studio.
+2. Sync Gradle.
+3. Run the `app` configuration on an emulator or device.
+
+Command‑line builds:
+```bash
+./gradlew assembleDebug
+./gradlew installDebug
+```
+
+### API and permissions
+- API: Uses Open‑Meteo, which does not require an API key.
+- Base URL: `https://api.open-meteo.com/`
+- Permission: `android.permission.INTERNET` is declared in `core/weather` and is merged into the final app manifest. You can move it to `app/src/main/AndroidManifest.xml` if you prefer centralizing permissions in the app module.
+
+### UI notes
+- The top bar/title area respects the device safe area using `WindowInsets.safeDrawing` and applies `innerPadding` from `Scaffold`.
+- The forecast list uses Material 3 `ListItem`, `ElevatedCard`, `AssistChip`, and dividers; simple emoji icons are shown per weather code.
+
+### Configuration tips
+- Default cities are defined in `feature/forecast/ForecastViewModel.kt` → `City.Predefined.cities`.
+- `WeatherRepository.create()` builds a Retrofit instance with Moshi + `KotlinJsonAdapterFactory()`.
+
+### Switching to OpenWeatherMap (optional)
+If you want to use OpenWeatherMap instead of Open‑Meteo:
+1. Add an API key to `local.properties` (not committed): `OPEN_WEATHER_API_KEY=YOUR_KEY`.
+2. Expose it via `build.gradle.kts` using `buildConfigField`.
+3. Update the API interface to include `@Query("appid") BuildConfig.OPEN_WEATHER_API_KEY` and change the base URL.
+
+### Tests
+Basic unit/instrumentation test stubs are included (`test/` and `androidTest/`). Run from Android Studio or:
+```bash
+./gradlew test
+./gradlew connectedAndroidTest
+```
+
+
