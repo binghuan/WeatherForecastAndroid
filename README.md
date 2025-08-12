@@ -97,7 +97,4 @@ app
 - Add more features as separate modules under `feature/` (e.g., `feature/settings`).
 - Split `core` by layer if needed: `core/data`, `core/domain`, `core/ui`.
 
-### License
-MIT License © 2025
-
 
